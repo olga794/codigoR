@@ -7,8 +7,16 @@ library(ggplot2)
 
 # LECTURA DE DATOS 
 ##################################################################
-setwd("C:/Users/Guest/Desktop/descarga/descargas 4 dic 19/R instalacion/codigo")
-datasets <- readxl_example("Base2017.xlsx")
+## saber el directorio -- getwd()
+setwd("/cloud/project/codigo")
+
+datasets <- read_excel("Base2017.xlsx", sheet = "Hoja 1")
+View(datasets)
+
+readxl_example()
+
+
+##datasets2 <- readxl_example("Base2017.xlsx")
 read_excel(datasets)
 # Specify sheet either by position or by name
 read_excel(datasets, 2)

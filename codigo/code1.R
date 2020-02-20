@@ -2,7 +2,7 @@
 library(neuralnet)
 library(ggplot2)
 
-setwd("C:/Users/Guest/Desktop/descarga/descargas 4 dic 19/R instalacion/codigo")
+setwd("/cloud/project/codigo")
 data = read.table("data.csv", header = T, sep=" ")
 data = data[1:1000,c(2:8)]
 #data = data[,c(2:8)]
