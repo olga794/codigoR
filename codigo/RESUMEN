@@ -1,0 +1,39 @@
+####################################### VARIABLES  Y TIPOS ORIGINALES
+Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	602 obs. of  14 variables:
+# variables y tipos de variables
+ $ SEXO                                       : chr  "M" "M" "F" "M" ...
+ $ EDAD                                       : chr  "47" "24" "12" "31" ...
+ $ ETNIA                                      : chr  "OTRO" "NEGRO,MULATO,AFROCOLOMBIANO" "OTRO" .
+ $ GRUPO POBLACIONAL                          : chr  "HABITANTE DE CALLE" "POBLACION CARCELARIA" 
+ $ COOMORBILIDAD                              : chr  "NINGUNA COOMORBILIDAD" "VIH/SIDA" "NINGUNA 
+ $ 57Contactos                                : num  0 2 3 5 3 0 3 2 1 1 ...
+ $ 58Contactos SR (Sintomaticos Respiratorios): num  0 2 1 0 0 0 0 0 0 0 ...
+ $ 60Total de contactos enfermos              : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ Contactos menores de 5 años                : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ TIENE VIH CONFIRMADO?                      : chr  "NEG" "VIH + PREVIO" "NEG" "NEG" ...
+ $ RECIBE TAR                                 : chr  "NO APLICA" "NO" "NO APLICA" "NO APLICA" ...
+ $ RECIBE TRIMETOPRIN                         : chr  "NO APLICA" "NO" "NO APLICA" "NO APLICA"..
+ $ RDO BK DX                                  : chr  "-" "+++" "-" "+++" ...
+ $ RDO CULTIVO DX                             : chr  "+" "+" "-" "+++" ...
+ #################################################### POSICION DE LAS VARIABLES 
+ [1] "SEXO"                                        "EDAD"                                       
+ [3] "ETNIA"                                       "GRUPO POBLACIONAL"                          
+ [5] "COOMORBILIDAD"                               "57Contactos"                                
+ [7] "58Contactos SR (Sintomaticos Respiratorios)" "60Total de contactos enfermos"              
+ [9] "Contactos menores de 5 años"                 "TIENE VIH CONFIRMADO?"                      
+[11] "RECIBE TAR"                                  "RECIBE TRIMETOPRIN\n"                       
+[13] "RDO BK DX"                                   "RDO CULTIVO DX" 
+ ################################################ CAMBIO DE NOMBRE DE VARIABLES 
+ $ GRUPO POBLACIONAL                          = GRUPOP
+ $ 57Contactos                                = CONTACTOS
+ $ 58Contactos SR (Sintomaticos Respiratorios)= CONTACTOSSR 
+ $ 60Total de contactos enfermos              = TCONTACTOSENF
+ $ Contactos menores de 5 años                = CONTACTOSMN5A
+ $ TIENE VIH CONFIRMADO?                      = VIHCONFIR
+ $ RECIBE TAR                                 = RECIBETAR
+ $ RECIBE TRIMETOPRIN                         = RECIBETRIME
+ $ RDO BK DX                                  = RDOBKDX
+ $ RDO CULTIVO DX                             = RDOCULTIVODX
+ ################################################ CAMBIO DE TIPOS
+
+ 
