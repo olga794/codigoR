@@ -2,10 +2,10 @@
 ##################################################################
 library(reader)
 library(readxl)
-#library(dummies)
+library(dummies)
 library(tidyverse)
 library(caret)
-#library(fastDummies)
+library(fastDummies)
 library(neuralnet)
 library(ggplot2)
 # LECTURA DE DATOS archivos de prueba 
@@ -47,8 +47,7 @@ Base2017 %>% map_lgl(.f = function(x){any(!is.na(x) & x == "")})## verificar val
 map_dbl(Base2017, .f = function(x){sum(is.na(x))}) # Número de datos ausentes por variable
 ############################################### CAMBIAR LOS TIPOS DE DATOS
 ##########CAMBIO DE CH A FACTOR 
-Base2017$EDAD <- as.factor(Base2017$EDAD)
-levels(Base2017$EDAD)
+
 Base2017$SEXO <- as.factor(Base2017$SEXO)
 levels(Base2017$SEXO)
 Base2017$ETNIA <- as.factor(Base2017$ETNIA)
@@ -67,6 +66,17 @@ Base2017$RDOBKDX <- as.factor(Base2017$RDOBKDX)
 levels(Base2017$RDOBKDX)
 Base2017$RDOCULTIVODX <- as.factor(Base2017$RDOCULTIVODX)
 levels(Base2017$RDOCULTIVODX)
+######EDAD SE CONVIERTE A FACTOR SE VERIFICAN LAS ENTRADAS 
+Base2017$EDAD <- as.factor(Base2017$EDAD)
+levels(Base2017$EDAD)
+######## SE AJUSTAN VALORES ATIPICOS 
+Base2017$EDAD <- as.character(Base2017$EDAD)
+Base2017 <- Base2017 %>%
+  mutate(EDADD = case_when(EDAD == "1/12" ~ "0.833",
+                           EDAD == "5/12" ~ "0.416",
+                           TRUE ~ EDAD   ))
+Base2017$EDADD <- as.double(Base2017$EDADD)
+Base2017$EDAD <- NULL
 
 ############################################## DISCRETIZAR VARIABLE DE ESTUDIO  
 Base2017 <- Base2017 %>%
@@ -75,12 +85,8 @@ Base2017 <- Base2017 %>%
                                 RDOCULTIVODX == "++" ~ "1",
                                 RDOCULTIVODX == "+++" ~ "1",
                                 RDOCULTIVODX == "POSITIVO 1 A 20 COLONIAS" ~ "1"))
-Base2017$RDOCULTIVO                               
-Base2017$RDOCULTIVO <- as.factor(Base2017$RDOCULTIVO)
-levels(Base2017$RDOCULTIVO)
-Base2017$RDOCULTIVODX <- NULL
-Base2017$RDOCULTIVO <- as.character(Base2017$RDOCULTIVO)
 Base2017$RDOCULTIVO <- as.numeric(Base2017$RDOCULTIVO)
+Base2017$RDOCULTIVODX <- NULL
 
 ##############################################FRECUENCIAS --REVISAR LAS VARIABLES 
 # Tabla de frecuencias 
@@ -99,31 +105,62 @@ Base2017$EDAD
 ############################################################################################################
 str(Base2017)
 names(Base2017)
-nrow(Base2017) ## 602
+################### NORMALIZAR DATOS NUMERICOS
+
+###ESCALAR LOS DATOS NUMERICOS
+BNN <- as.data.frame(scale(Base2017[5:8]))
+Base2017 <- Base2017 %>%  mutate(CONTACTOS = scale(Base2017[5]))
+
+max = apply(Base2017 , 2 , max)
+min = apply(Base2017, 2 , min)
+BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
+################### NORMALIZAR VAOLRES CUALITATIVOS 
+## formula con nombres a normalizar
+nom = names(Base2017)
+formNormaC = as.formula(paste(" ~ ", paste(nom[!nom %in% "R"], collapse = " + ")))
+Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
+head(Base2017NormaC)
+str(Base2017NormaC)
+summary(Base2017NormaC)
+names(Base2017NormaC)
+
+
 ##########################CONTRUIR LA MATRIZ DE INDICE PARA PRUEBAS Y ENTRENAMIENTO 
+nrow(Base2017) ## 602
 random = round(0.1 * nrow(Base2017), digits = 0) ##60
 total_index = 1:nrow(Base2017)
 index_test = sample(total_index, size = random)
 index_train = setdiff(total_index,index_test)
-############################################################ESCALAR LOS DATOS NUMERICOS
-max = apply(Base2017 , 2 , max)
-min = apply(Base2017, 2 , min)
-BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
+
 ############################################################# SEPARAR LOS DOS GRUPOS DE  DATOS
 BtrainNN = Base2017[index_train,]
 BtestNN = Base2017[index_test, ]
 dim(BtrainNN)
 dim(BtestNN)
+######
+str(BtrainNN)
+names(BtrainNN)
+BtrainNN$EDAD <- as.character(BtrainNN$EDAD)
+BtrainNN$EDAD <- as.numeric(BtrainNN$EDAD)
 #####################CONSTRUIR LA FORMULA 
 nom = names(BtrainNN)
 form = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
 ##############################################################################################
-nnUno <- neuralnet(form,
-                 data = BtrainNN,
+# dummify the data
+dmy <- dummyVars(" ~ .", data = BtrainNN)
+trsf <- data.frame(predict(dmy, newdata = customers))
+
+BtrainNN <- as.data.frame( scale(BtrainNN[5:8]),data())
+
+
+
+
+nnUno1 <- neuralnet(form,
+                 data = mbd,
                  #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
                  hidden = 2,
                  #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
                  err.fct = "ce",
                  #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
                  linear.output= FALSE)
-
+??dummyVars

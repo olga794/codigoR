@@ -1,8 +1,14 @@
-
+library(caret)
+#Base2017$RDOCULTIVO <- as.factor(Base2017$RDOCULTIVO)
+#levels(Base2017$RDOCULTIVO)
 ############################### EDAD A NUMERICO
 Base2017$EDAD <- as.character(Base2017$EDAD)
 Base2017$EDAD <- as.double(Base2017$EDAD)
 c("SEXO")
+################ CULTIVO  NUMERICO 
+Base2017$RDOCULTIVO <- as.character(Base2017$RDOCULTIVO)
+##### ajustar edades fuera de rango convertir a doble 
+Base2017$RDOCULTIVO <- as.numeric(Base2017$RDOCULTIVO)
 
 ################################################# binarización o one hot encoding
 
@@ -142,3 +148,54 @@ dummyVars
 ##lógico. Si la función de error es igual a la función de probabilidad de registro negativa, 
 ##se calcularán los criterios de información AIC y BIC. Además, el uso de trust.interval es significativo.
 
+##############################################################################
+#################################################################################
+when <- data.frame(time = c("afternoon", "night", "afternoon",
+                            "morning", "morning", "morning",
+                            "morning", "afternoon", "afternoon"),
+                   day = c("Mon", "Mon", "Mon",
+                           "Wed", "Wed", "Fri",
+                           "Sat", "Sat", "Fri"))
+
+levels(when$time) <- list(morning="morning",
+                          afternoon="afternoon",
+                          night="night")
+levels(when$day) <- list(Mon="Mon", Tue="Tue", Wed="Wed", Thu="Thu",
+                         Fri="Fri", Sat="Sat", Sun="Sun")
+
+## Default behavior:
+model.matrix(~day, when)
+
+mainEffects <- dummyVars(~ day + time, data = when)
+mainEffects
+predict(mainEffects, when[1:3,])
+
+when2 <- when
+when2[1, 1] <- NA
+predict(mainEffects, when2[1:3,])
+predict(mainEffects, when2[1:3,], na.action = na.omit)
+
+
+interactionModel <- dummyVars(~ day + time + day:time,
+                              data = when,
+                              sep = ".")
+predict(interactionModel, when[1:3,])
+
+noNames <- dummyVars(~ day + time + day:time,
+                     data = when,
+                     levelsOnly = TRUE)
+predict(noNames, when)
+
+head(class2ind(iris$Species))
+
+two_levels <- factor(rep(letters[1:2], each = 5))
+class2ind(two_levels)
+class2ind(two_levels, drop2nd = TRUE)
+
+
+###ESCALAR LOS DATOS NUMERICOS
+
+
+max = apply(Base2017 , 2 , max)
+min = apply(Base2017, 2 , min)
+BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
