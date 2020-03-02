@@ -34,6 +34,63 @@ Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	602 obs. of  14 variables:
  $ RECIBE TRIMETOPRIN                         = RECIBETRIME
  $ RDO BK DX                                  = RDOBKDX
  $ RDO CULTIVO DX                             = RDOCULTIVODX
+ #######################################################RESULTADO
+ [1] "SEXO"          "EDAD"          "ETNIA"         "GRUPOP"        "COOMORBILIDAD" "CONTACTOS"    
+ [7] "CONTACTOSSR"   "TCONTACTOSENF" "CONTACTOSMN5A" "VIHCONFIR"     "RECIBETAR"     "RECIBETRIME"  
+[13] "RDOBKDX"       "RDOCULTIVODX" 
  ################################################ CAMBIO DE TIPOS
 
+ $ SEXO         : chr  "M" "M" "F" "M" ...
+ $ EDAD         : chr  "47" "24" "12" "31" ...
+ $ ETNIA        : chr  "OTRO" "NEGRO,MULATO,AFROCOLOMBIANO" "OTRO" "OTRO" ...
+ $ GRUPOP       : chr  "HABITANTE DE CALLE" "POBLACION CARCELARIA""NINGUN GRUPO POBLACIONAL""FARMACODEPEN" ...
+ $ COOMORBILIDAD: chr  "NINGUNA COOMORBILIDAD" "VIH/SIDA" "NINGUNA COOMORBILIDAD" "NINGUNA COOMORBILIDAD" ...
+ $ CONTACTOS    : num  0 2 3 5 3 0 3 2 1 1 ...
+ $ CONTACTOSSR  : num  0 2 1 0 0 0 0 0 0 0 ...
+ $ TCONTACTOSENF: num  0 0 0 0 0 0 0 0 0 0 ...
+ $ CONTACTOSMN5A: num  0 0 0 0 0 0 0 0 0 0 ...
+ $ VIHCONFIR    : chr  "NEG" "VIH + PREVIO" "NEG" "NEG" ...
+ $ RECIBETAR    : chr  "NO APLICA" "NO" "NO APLICA" "NO APLICA" ...
+ $ RECIBETRIME  : chr  "NO APLICA" "NO" "NO APLICA" "NO APLICA" ...
+ $ RDOBKDX      : chr  "-" "+++" "-" "+++" ...
+ $ RDOCULTIVODX : chr  "+" "+" "-" "+++" ...
+ ##########################################PASAR CHR  A FACTOR A
+ EDAD
+  [1] "1"    "1/12" "11"   "12"   "15"   "16"   "17"   "18"   "19"   "2"    "20"   "21" 
+[13] "22"   "23"   "24"   "25"   "26"   "27"   "28"   "29"   "3"    "30"   "31"   "32"  
+[25] "33"   "34"   "35"   "36"   "37"   "38"   "39"   "4"    "40"   "41"   "42"   "43"  
+[37] "44"   "45"   "46"   "47"   "48"   "49"   "5"    "5/12" "50"   "51"   "52"   "53"  
+[49] "54"   "55"   "56"   "57"   "58"   "59"   "6"    "60"   "61"   "62"   "63"   "64"  
+[61] "65"   "66"   "67"   "68"   "69"   "70"   "71"   "72"   "73"   "74"   "75"   "76"  
+[73] "77"   "78"   "79"   "80"   "81"   "82"   "83"   "84"   "85"   "86"   "87"   "88"  
+[85] "89"   "90"   "93"   "94"  
+ SEXO
+ [1] "F" "M"
+ 
+ ETNIA
+ [1] "INDIGENA"                    "NEGRO,MULATO,AFROCOLOMBIANO" "OTRO" 
+ GRUPOP
+ [1] "DESPLAZADO"               "FARMACODEPENDIENTE"       "GESTANTE"                
+ [4] "HABITANTE DE CALLE"       "MADRES COMUNITARIAS"      "MIGRANTE"                
+ [7] "NINGUN GRUPO POBLACIONAL" "PERSONA CON DISCAPACIDAD" "POBLACION CARCELARIA"    
+[10] "TRABAJADOR DE LA SALUD"  
+ COOMORBILIDAD
+ [1] "DIABETES"                "ENFERMEDAD RENAL"        "MALNUTRICION"           
+[4] "NINGUNA"                 "NINGUNA COOMORBILIDAD"   "OTRAS INMUNOSUPRESIONES"
+[7] "SILICOSIS"               "VIH/SIDA"
+ VIHCONFIR
+[1] "NEG"               "NO REALIZADO"      "POS"               "USUARIO NO ACEPTA"
+[5] "VIH + PREVIO"  
+ RECIBETAR
+ [1] "NO"        "NO APLICA" "SI"
+ RECIBETRIME
+ [1] "NO"        "NO APLICA" "SI"  
+ RDOBKDX
+ [1] "-"                   "+"                   "++"                  "+++"                
+[5] "NO REALIZADO"        "POSITIVO 1 A 9 BAAR"
+ RDOCULTIVODX
+ [1] "-"                   "+"                   "++"                  "+++"                
+[5] "NO REALIZADO"        "POSITIVO 1 A 9 BAAR"
+ 
+ 
  

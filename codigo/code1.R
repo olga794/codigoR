@@ -1,12 +1,13 @@
 
 library(neuralnet)
 library(ggplot2)
-
+getwd()
 setwd("/cloud/project/codigo")
 data = read.table("data.csv", header = T, sep=" ")
 data = data[1:1000,c(2:8)]
 #data = data[,c(2:8)]
 dim(data)
+str(data)#
 
 random = round(0.1 * nrow(data), digits = 0)
 total_index = 1:nrow(data)
