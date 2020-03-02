@@ -8,7 +8,7 @@ data = data[1:1000,c(2:8)]
 #data = data[,c(2:8)]
 dim(data)
 str(data)#
-
+data
 random = round(0.1 * nrow(data), digits = 0)
 total_index = 1:nrow(data)
 index_test = sample(total_index, size = random)
@@ -21,7 +21,7 @@ scaled = as.data.frame(scale(data, center = min, scale = max - min))
 summary(data)
 summary(scaled)
   
-trainNN = scaled[index_train, ]
+trainNN = scaled[index_train,]
 testNN = scaled[index_test, ]
 dim(trainNN)
 dim(testNN)

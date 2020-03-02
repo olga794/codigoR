@@ -92,5 +92,21 @@ Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	602 obs. of  14 variables:
  [1] "-"                   "+"                   "++"                  "+++"                
 [5] "NO REALIZADO"        "POSITIVO 1 A 9 BAAR"
  
+ ################################## DISCRETIZAR LA VARIABLE DE ESTUDIO 
+  
+ SE CREA UNA NUEVA COLOMBA PARA EL RESULTADO DEL EXAMEN QUE TIENE VALORES DE 0 Y 1
  
+ Base2017 <- Base2017 %>%
+  mutate(RDOCULTIVO = case_when(RDOCULTIVODX == "-"  ~ "0",
+                                RDOCULTIVODX == "+" ~ "1",
+                                RDOCULTIVODX == "++" ~ "1",
+                                RDOCULTIVODX == "+++" ~ "1",
+                                RDOCULTIVODX == "POSITIVO 1 A 20 COLONIAS" ~ "1"))
+Base2017$RDOCULTIVO                               
+Base2017$RDOCULTIVO <- as.factor(Base2017$RDOCULTIVO)
+levels(Base2017$RDOCULTIVO)
+Base2017$RDOCULTIVODX <- NULL
+
+ Y SE ELIMINA LA VARIABLE ANTERIOR 
+ ############################################################################
  

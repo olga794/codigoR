@@ -2,10 +2,12 @@
 ##################################################################
 library(reader)
 library(readxl)
-library(dummies)
+#library(dummies)
 library(tidyverse)
 library(caret)
-library(fastDummies)
+#library(fastDummies)
+library(neuralnet)
+library(ggplot2)
 # LECTURA DE DATOS archivos de prueba 
 ##################################################################
 ## saber el directorio -- getwd()
@@ -66,7 +68,7 @@ levels(Base2017$RDOBKDX)
 Base2017$RDOCULTIVODX <- as.factor(Base2017$RDOCULTIVODX)
 levels(Base2017$RDOCULTIVODX)
 
-############################################## DISCRETIZAR VARIABLES DE ESTUDIO  
+############################################## DISCRETIZAR VARIABLE DE ESTUDIO  
 Base2017 <- Base2017 %>%
   mutate(RDOCULTIVO = case_when(RDOCULTIVODX == "-"  ~ "0",
                                 RDOCULTIVODX == "+" ~ "1",
@@ -76,9 +78,11 @@ Base2017 <- Base2017 %>%
 Base2017$RDOCULTIVO                               
 Base2017$RDOCULTIVO <- as.factor(Base2017$RDOCULTIVO)
 levels(Base2017$RDOCULTIVO)
+Base2017$RDOCULTIVODX <- NULL
+Base2017$RDOCULTIVO <- as.character(Base2017$RDOCULTIVO)
+Base2017$RDOCULTIVO <- as.numeric(Base2017$RDOCULTIVO)
 
-
-##############################################FRECUENCIAS 
+##############################################FRECUENCIAS --REVISAR LAS VARIABLES 
 # Tabla de frecuencias 
 table(Base2017$RDOCULTIVO)
 # Tabla de frecuencias EN PORCENTAJE
@@ -90,83 +94,36 @@ prop.table(table(Base2017$CONTACTOS, Base2017$RDOCULTIVO), margin = 1) %>% round
 # Tabla de frecuencias relativas de RESULTADO DE CULTIVO por EDAD
 prop.table(table(Base2017$EDAD, Base2017$RDOCULTIVO), margin = 1) %>% round(digits = 2)
 Base2017$EDAD
-# Tabla de frecuencias relativas de RESULTADO DE CULTIVO
+##################################################################################################
+########### RED NEURONAL #########################################################################
+############################################################################################################
+str(Base2017)
+names(Base2017)
+nrow(Base2017) ## 602
+##########################CONTRUIR LA MATRIZ DE INDICE PARA PRUEBAS Y ENTRENAMIENTO 
+random = round(0.1 * nrow(Base2017), digits = 0) ##60
+total_index = 1:nrow(Base2017)
+index_test = sample(total_index, size = random)
+index_train = setdiff(total_index,index_test)
+############################################################ESCALAR LOS DATOS NUMERICOS
+max = apply(Base2017 , 2 , max)
+min = apply(Base2017, 2 , min)
+BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
+############################################################# SEPARAR LOS DOS GRUPOS DE  DATOS
+BtrainNN = Base2017[index_train,]
+BtestNN = Base2017[index_test, ]
+dim(BtrainNN)
+dim(BtestNN)
+#####################CONSTRUIR LA FORMULA 
+nom = names(BtrainNN)
+form = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
+##############################################################################################
+nnUno <- neuralnet(form,
+                 data = BtrainNN,
+                 #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                 hidden = 2,
+                 #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                 err.fct = "ce",
+                 #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                 linear.output= FALSE)
 
-
-
-############################### EDAD A NUMERICO
-Base2017$EDAD <- as.character(Base2017$EDAD)
-Base2017$EDAD <- as.double(Base2017$EDAD)
-c("SEXO")
-
-################################################# binarización o one hot encoding
-
-Base2017n <- dummy.data.frame(Base2017,names =c("SEXO"),separate(sep = "_"))
-#(Base2017, name = c("SEXO"), sep = "_")
-
-# NORMALIZACION DE CATEGORIAS 
-################################################################
-
-for(unique_value in unique(Base2017$ETNIA)){
-  
-  Base2017[paste("ETNIA", unique_value, sep = "_")] <- ifelse(Base2017$ETNIA == unique_value, 1, 0)
-}
-Base2017$ETNIA <- NULL
-dmy <- dummyVars(" ~ .", data = Base2017)
-
-# columna_dummy <- function(dataf, columna) {
-#   dataf %>% 
-#     mutate_at(columna, ~paste(columna, eval(as.symbol(columna)), sep = "_")) %>% 
-#     mutate(valor = 1) %>% 
-#     spread(key = columna, value = valor, fill = 0)
-# }
-# columna_dummy(Base2017_dm, "SEXO")
-
-columna_dummy <- function(dataf, columna,nombre) {
-  for(unique_value in unique(columna)){
-    
-    dataf[paste(nombre, unique_value, sep = "_")] <- ifelse(columna == unique_value, 1, 0)
-  }
-  columna <- NULL
-}
-
-columna_dummy(Base2017,Base2017$RECIBETAR,"RECIBETAR")
-
-Base2017 <- Base2017 %>% step_dummy(all_nominal())
-dummy_cols(Base2017,  select_columns = c("SEXO"))
-#<- dummy.data.frame(Base2017)
-#Base2017_dm <- step_dummy(all_nominal(), -all_outcomes())
-#Base2017_dm <- dummy.data.frame(Base2017,names = all, sep = "_")
-#.data.frame(Base2017=Base2017, names= "SEXO", sep="_")
-
-
-#Base2017_dm
-
-#Base2017_dm %>% mutate(SEXO = paste("SEXO", SEXO, sep = "_"))
-
-
-# columna_dummy <- function(dataf, columna) {
-#   dataf %>% 
-#     mutate_at(columna, ~paste(columna, eval(as.symbol(columna)), sep = "_")) %>% 
-#     mutate(valor = 1) %>% 
-#     spread(key = columna, value = valor, fill = 0)
-# }
-# columna_dummy(Base2017_dm, "SEXO")
-summary(Base2017_dm)
-
-##objeto_recipe <- objeto_recipe %>% step_dummy(all_nominal(), -all_outcomes())
-##Numericos
-
-sumarr
-# NORMALIZACION DE VARIABLES NUMERICAS 
-################################################################
-
-
-max = apply(Base2017$RDOCULTIVO , 2 , max)
-min = apply(Base2017$RDOCULTIVO, 2 , min)
-scaled = as.data.frame(scale(Base2017$RDOCULTIVO, center = min, scale = max - min))
-
-summary(data)
-summary(scaled)
-
-dummyVars
