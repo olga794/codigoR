@@ -45,13 +45,18 @@ names(Base2017)[c(4,6,7,8,9,10,11,12,13,14)] <-
 colSums(is.na(Base2017)) ## verificar valores nulos
 Base2017 %>% map_lgl(.f = function(x){any(!is.na(x) & x == "")})## verificar valores ""
 map_dbl(Base2017, .f = function(x){sum(is.na(x))}) # Número de datos ausentes por variable
+################################################## AJUSTAR NOMBRE DE FACTOR
+Base2017 <- Base2017 %>%
+  mutate(ETNIAT = case_when(ETNIA == "NEGRO,MULATO,AFROCOLOMBIANO" ~ "NEGRO/MULATO/AFROCOLOMBIANO",
+                            TRUE ~ ETNIA   ))
+Base2017$ETNIA <- NULL
 ############################################### CAMBIAR LOS TIPOS DE DATOS
 ##########CAMBIO DE CH A FACTOR 
 
 Base2017$SEXO <- as.factor(Base2017$SEXO)
 levels(Base2017$SEXO)
-Base2017$ETNIA <- as.factor(Base2017$ETNIA)
-levels(Base2017$ETNIA)
+Base2017$ETNIAT <- as.factor(Base2017$ETNIAT)
+levels(Base2017$ETNIAT)
 Base2017$GRUPOP <- as.factor(Base2017$GRUPOP)
 levels(Base2017$GRUPOP)
 Base2017$COOMORBILIDAD <- as.factor(Base2017$COOMORBILIDAD)
@@ -118,13 +123,26 @@ BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max -
 ## formula con nombres a normalizar
 nom = names(Base2017)
 formNormaC = as.formula(paste(" ~ ", paste(nom[!nom %in% "R"], collapse = " + ")))
+base <- as.data.frame(model.matrix( formNormaC, data = Base2017 ))
+#######
 Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
 head(Base2017NormaC)
 str(Base2017NormaC)
 summary(Base2017NormaC)
 names(Base2017NormaC)
-
-
+#####
+#### prueba
+base$`(Intercept)` <- NULL
+nom = names(base)
+formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
+nnUno1 <- neuralnet(form,
+                    data = Base2017NormaC,
+                    #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                    hidden = 2,
+                    #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                    err.fct = "ce",
+                    #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                    linear.output= FALSE)
 ##########################CONTRUIR LA MATRIZ DE INDICE PARA PRUEBAS Y ENTRENAMIENTO 
 nrow(Base2017) ## 602
 random = round(0.1 * nrow(Base2017), digits = 0) ##60
