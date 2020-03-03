@@ -130,7 +130,7 @@ base <- as.data.frame(model.matrix( formNormaC, data = Base2017 ))
 #### prueba
 nom = names(base)
 formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
-nnUno1 <- neuralnet(form,
+nnUno1 <- neuralnet(formp,
                     data = base,
                     #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
                     hidden = 2,
@@ -138,6 +138,7 @@ nnUno1 <- neuralnet(form,
                     err.fct = "ce",
                     #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
                     linear.output= FALSE)
+plot(nnUno1)
 ##################################  AQUI VAMOS 
 
 
