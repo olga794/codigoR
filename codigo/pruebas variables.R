@@ -199,3 +199,9 @@ class2ind(two_levels, drop2nd = TRUE)
 max = apply(Base2017 , 2 , max)
 min = apply(Base2017, 2 , min)
 BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
+
+################################################## AJUSTAR NOMBRE DE FACTOR
+Base2017 <- Base2017 %>%
+  mutate(ETNIAT = case_when(ETNIA == "NEGRO,MULATO,AFROCOLOMBIANO" ~ "NEGRO/MULATO/AFROCOLOMBIANO",
+                            TRUE ~ ETNIA   ))
+Base2017$ETNIA <- NULL

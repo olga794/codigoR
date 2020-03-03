@@ -45,29 +45,39 @@ names(Base2017)[c(4,6,7,8,9,10,11,12,13,14)] <-
 colSums(is.na(Base2017)) ## verificar valores nulos
 Base2017 %>% map_lgl(.f = function(x){any(!is.na(x) & x == "")})## verificar valores ""
 map_dbl(Base2017, .f = function(x){sum(is.na(x))}) # Número de datos ausentes por variable
-################################################## AJUSTAR NOMBRE DE FACTOR
-Base2017 <- Base2017 %>%
-  mutate(ETNIAT = case_when(ETNIA == "NEGRO,MULATO,AFROCOLOMBIANO" ~ "NEGRO/MULATO/AFROCOLOMBIANO",
-                            TRUE ~ ETNIA   ))
-Base2017$ETNIA <- NULL
-############################################### CAMBIAR LOS TIPOS DE DATOS
+
+############################################### CAMBIAR LOS TIPOS DE DATOS Y AJUSTAR NOMBRES  FACTORES
 ##########CAMBIO DE CH A FACTOR 
 
 Base2017$SEXO <- as.factor(Base2017$SEXO)
 levels(Base2017$SEXO)
-Base2017$ETNIAT <- as.factor(Base2017$ETNIAT)
-levels(Base2017$ETNIAT)
+Base2017$ETNIA <- as.factor(Base2017$ETNIA)
+levels(Base2017$ETNIA)# se verifican los niveles existentes  y se cambian por unos mas apropiados
+levels(Base2017$ETNIA) <- c("Indigena", "NeMuAfro","Otro") 
+levels(Base2017$ETNIA)
 Base2017$GRUPOP <- as.factor(Base2017$GRUPOP)
+levels(Base2017$GRUPOP)
+levels(Base2017$GRUPOP) <- c("Desplazado", "FarmacoDPTE" , "Gestante" , "HabitanteCalle" , "MadresComun", "Migrante" , "Ninguno", "PersonaDisc","PoblacionCarcel" , "TrabajadorSalud") 
 levels(Base2017$GRUPOP)
 Base2017$COOMORBILIDAD <- as.factor(Base2017$COOMORBILIDAD)
 levels(Base2017$COOMORBILIDAD)
+levels(Base2017$COOMORBILIDAD)<- c("Diabetes", "EnfermedadRenal" , "Malnutricion" , "Ninguna" , "NingunaCoom" , "OtrasInmunosupre" ,  "Silicosis" , "VIH_SIDA")
+levels(Base2017$COOMORBILIDAD)
 Base2017$VIHCONFIR <- as.factor(Base2017$VIHCONFIR)
+levels(Base2017$VIHCONFIR)
+levels(Base2017$VIHCONFIR)<- c("Neg", "NoRealizado", "Pos", "UsuarioNoAcepta" , "VIHPos_PREVIO")
 levels(Base2017$VIHCONFIR)
 Base2017$RECIBETAR <- as.factor(Base2017$RECIBETAR)
 levels(Base2017$RECIBETAR)
+levels(Base2017$RECIBETAR)<- c("No" , "NoAplica", "Si")  
+levels(Base2017$RECIBETAR)
 Base2017$RECIBETRIME <- as.factor(Base2017$RECIBETRIME)
 levels(Base2017$RECIBETRIME)
+levels(Base2017$RECIBETRIME)<- c("No" , "NoAplica", "Si")  
+levels(Base2017$RECIBETRIME)
 Base2017$RDOBKDX <- as.factor(Base2017$RDOBKDX)
+levels(Base2017$RDOBKDX)
+levels(Base2017$RDOBKDX)<- c("Neg", "Pos" ,  "PosD" , "Pos3" ,"NoRealizado", "PosUnoANueveBAAR")
 levels(Base2017$RDOBKDX)
 Base2017$RDOCULTIVODX <- as.factor(Base2017$RDOCULTIVODX)
 levels(Base2017$RDOCULTIVODX)
@@ -110,6 +120,62 @@ Base2017$EDAD
 ############################################################################################################
 str(Base2017)
 names(Base2017)
+################### NORMALIZAR VAOLRES CUALITATIVOS 
+## formula con nombres a normalizar
+nom = names(Base2017)
+formNormaC = as.formula(paste(" ~ -1 + ", paste(nom, collapse = " + ")))
+Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
+attributes(Base2017NormaC)
+base <- as.data.frame(model.matrix( formNormaC, data = Base2017 ))
+#### prueba
+nom = names(base)
+formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
+nnUno1 <- neuralnet(form,
+                    data = base,
+                    #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                    hidden = 2,
+                    #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                    err.fct = "ce",
+                    #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                    linear.output= FALSE)
+##################################  AQUI VAMOS 
+
+
+
+
+
+base <- as.data.frame(model.matrix(formNormaC, data = Base2017 ))
+
+base3 <- model.matrix(formNormaC, data = Base2017, contrasts = list(GRUPOP = "contr.sum") )
+
+base9 <- model.matrix(formNormaC, data = Base2017,  contrasts.ar =  list(GRUPOP =contrasts(Base2017$GRUPOP, contrasts=F) ))
+attributes(base9)
+attributes(base3)
+attributes(base)
+lapply(Base2017$GRUPOP, contrasts, contrasts = FALSE)
+base4 <- model.matrix(formNormaC, data = Base2017, 
+             contrasts.arg = lapply(Base2017, is.factor, contrasts , contrasts = F))
+
+contrasts(Base2017$GRUPOP)
+options(contrasts=c("contr.sum","contr.poly"))
+
+Nivelgp <- levels(Base2017$GRUPOP)
+contr.sum(Nivelgp)
+contr.treatment(Nivelgp)
+contr.poly(Nivelgp)
+contr.helmert(Nivelgp)
+
+
+
+
+
+
+#######
+Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
+head(Base2017NormaC)
+str(Base2017NormaC)
+summary(Base2017NormaC)
+names(Base2017NormaC)
 ################### NORMALIZAR DATOS NUMERICOS
 
 ###ESCALAR LOS DATOS NUMERICOS
@@ -119,20 +185,8 @@ Base2017 <- Base2017 %>%  mutate(CONTACTOS = scale(Base2017[5]))
 max = apply(Base2017 , 2 , max)
 min = apply(Base2017, 2 , min)
 BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
-################### NORMALIZAR VAOLRES CUALITATIVOS 
-## formula con nombres a normalizar
-nom = names(Base2017)
-formNormaC = as.formula(paste(" ~ ", paste(nom[!nom %in% "R"], collapse = " + ")))
-base <- as.data.frame(model.matrix( formNormaC, data = Base2017 ))
-#######
-Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
-head(Base2017NormaC)
-str(Base2017NormaC)
-summary(Base2017NormaC)
-names(Base2017NormaC)
 #####
 #### prueba
-base$`(Intercept)` <- NULL
 nom = names(base)
 formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
 nnUno1 <- neuralnet(form,
@@ -182,3 +236,4 @@ nnUno1 <- neuralnet(form,
                  #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
                  linear.output= FALSE)
 ??dummyVars
+??model.matrix

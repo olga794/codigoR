@@ -118,4 +118,127 @@ Base2017$RDOCULTIVODX <- NULL
 
  Y SE ELIMINA LA VARIABLE ANTERIOR 
  ############################################################################
+ NORMALIZAR 
+ FORMULA 
+ ~-1 + SEXO + ETNIA + GRUPOP + COOMORBILIDAD + CONTACTOS + CONTACTOSSR + 
+    TCONTACTOSENF + CONTACTOSMN5A + VIHCONFIR + RECIBETAR + RECIBETRIME + 
+    RDOBKDX + EDADD + RDOCULTIVO
+ 
+ ###############################################################
+ $dim
+[1] 602  39
+
+$dimnames[[2]]
+ [1] "SEXOF"                         "SEXOM"                        
+ [3] "ETNIANeMuAfro"                 "ETNIAOtro"                    
+ [5] "GRUPOPFarmacoDPTE"             "GRUPOPGestante"               
+ [7] "GRUPOPHabitanteCalle"          "GRUPOPMadresComun"            
+ [9] "GRUPOPMigrante"                "GRUPOPNinguno"                
+[11] "GRUPOPPersonaDisc"             "GRUPOPPoblacionCarcel"        
+[13] "GRUPOPTrabajadorSalud"         "COOMORBILIDADEnfermedadRenal" 
+[15] "COOMORBILIDADMalnutricion"     "COOMORBILIDADNinguna"         
+[17] "COOMORBILIDADNingunaCoom"      "COOMORBILIDADOtrasInmunosupre"
+[19] "COOMORBILIDADSilicosis"        "COOMORBILIDADVIH_SIDA"        
+[21] "CONTACTOS"                     "CONTACTOSSR"                  
+[23] "TCONTACTOSENF"                 "CONTACTOSMN5A"                
+[25] "VIHCONFIRNoRealizado"          "VIHCONFIRPos"                 
+[27] "VIHCONFIRUsuarioNoAcepta"      "VIHCONFIRVIHPos_PREVIO"       
+[29] "RECIBETARNoAplica"             "RECIBETARSi"                  
+[31] "RECIBETRIMENoAplica"           "RECIBETRIMESi"                
+[33] "RDOBKDXPos"                    "RDOBKDXPosD"                  
+[35] "RDOBKDXPos3"                   "RDOBKDXNoRealizado"           
+[37] "RDOBKDXPosUnoANueveBAAR"       "EDADD"                        
+[39] "RDOCULTIVO"                   
+
+
+$assign
+ [1]  1  1  2  2  3  3  3  3  3  3  3  3  3  4  4  4  4  4  4  4  5  6  7  8  9  9  9  9 10 10 11
+[32] 11 12 12 12 12 12 13 14
+
+$contrasts
+$contrasts$SEXO
+[1] "contr.treatment"
+
+$contrasts$ETNIA
+[1] "contr.treatment"
+
+$contrasts$GRUPOP
+[1] "contr.treatment"
+
+$contrasts$COOMORBILIDAD
+[1] "contr.treatment"
+
+$contrasts$VIHCONFIR
+[1] "contr.treatment"
+
+$contrasts$RECIBETAR
+[1] "contr.treatment"
+
+$contrasts$RECIBETRIME
+[1] "contr.treatment"
+
+$contrasts$RDOBKDX
+[1] "contr.treatment"
+
+ 
+ ################################################
+ > levels(Base2017$SEXO)
+[1] "F" "M"
+> Base2017$ETNIA <- as.factor(Base2017$ETNIA)
+> levels(Base2017$ETNIA)# se verifican los niveles existentes  y se cambian por unos mas apropiados
+[1] "INDIGENA"                    "NEGRO,MULATO,AFROCOLOMBIANO" "OTRO"                       
+> levels(Base2017$ETNIA) <- c("Indigena", "NeMuAfro","Otro") 
+> levels(Base2017$ETNIA)
+[1] "Indigena" "NeMuAfro" "Otro"    
+> Base2017$GRUPOP <- as.factor(Base2017$GRUPOP)
+> levels(Base2017$GRUPOP)
+ [1] "DESPLAZADO"               "FARMACODEPENDIENTE"       "GESTANTE"                
+ [4] "HABITANTE DE CALLE"       "MADRES COMUNITARIAS"      "MIGRANTE"                
+ [7] "NINGUN GRUPO POBLACIONAL" "PERSONA CON DISCAPACIDAD" "POBLACION CARCELARIA"    
+[10] "TRABAJADOR DE LA SALUD"  
+> levels(Base2017$GRUPOP) <- c("Desplazado", "FarmacoDPTE" , "Gestante" , "HabitanteCalle" , "MadresComun", "Migrante" , "Ninguno", "PersonaDisc","PoblacionCarcel" , "TrabajadorSalud") 
+> levels(Base2017$GRUPOP)
+ [1] "Desplazado"      "FarmacoDPTE"     "Gestante"        "HabitanteCalle"  "MadresComun"    
+ [6] "Migrante"        "Ninguno"         "PersonaDisc"     "PoblacionCarcel" "TrabajadorSalud"
+> Base2017$COOMORBILIDAD <- as.factor(Base2017$COOMORBILIDAD)
+> levels(Base2017$COOMORBILIDAD)
+[1] "DIABETES"                "ENFERMEDAD RENAL"        "MALNUTRICION"           
+[4] "NINGUNA"                 "NINGUNA COOMORBILIDAD"   "OTRAS INMUNOSUPRESIONES"
+[7] "SILICOSIS"               "VIH/SIDA"               
+> levels(Base2017$COOMORBILIDAD)<- c("Diabetes", "EnfermedadRenal" , "Malnutricion" , "Ninguna" , "NingunaCoom" , "OtrasInmunosupre" ,  "Silicosis" , "VIH_SIDA")
+> levels(Base2017$COOMORBILIDAD)
+[1] "Diabetes"         "EnfermedadRenal"  "Malnutricion"     "Ninguna"          "NingunaCoom"     
+[6] "OtrasInmunosupre" "Silicosis"        "VIH_SIDA"        
+> Base2017$VIHCONFIR <- as.factor(Base2017$VIHCONFIR)
+> levels(Base2017$VIHCONFIR)
+[1] "NEG"               "NO REALIZADO"      "POS"               "USUARIO NO ACEPTA"
+[5] "VIH + PREVIO"     
+> levels(Base2017$VIHCONFIR)<- c("Neg", "NoRealizado", "Pos", "UsuarioNoAcepta" , "VIHPos_PREVIO")
+> levels(Base2017$VIHCONFIR)
+[1] "Neg"             "NoRealizado"     "Pos"             "UsuarioNoAcepta" "VIHPos_PREVIO"  
+> Base2017$RECIBETAR <- as.factor(Base2017$RECIBETAR)
+> levels(Base2017$RECIBETAR)
+[1] "NO"        "NO APLICA" "SI"       
+> levels(Base2017$RECIBETAR)<- c("No" , "NoAplica", "Si")  
+> levels(Base2017$RECIBETAR)
+[1] "No"       "NoAplica" "Si"      
+> Base2017$RECIBETRIME <- as.factor(Base2017$RECIBETRIME)
+> levels(Base2017$RECIBETRIME)
+[1] "NO"        "NO APLICA" "SI"       
+> levels(Base2017$RECIBETRIME)<- c("No" , "NoAplica", "Si")  
+> levels(Base2017$RECIBETRIME)
+[1] "No"       "NoAplica" "Si"      
+> Base2017$RDOBKDX <- as.factor(Base2017$RDOBKDX)
+> levels(Base2017$RDOBKDX)
+[1] "-"                   "+"                   "++"                  "+++"                
+[5] "NO REALIZADO"        "POSITIVO 1 A 9 BAAR"
+> levels(Base2017$RDOBKDX)<- c("Neg", "Pos" ,  "PosD" , "Pos3" ,"NoRealizado", "PosUnoANueveBAAR")
+> levels(Base2017$RDOBKDX)
+[1] "Neg"              "Pos"              "PosD"             "Pos3"             "NoRealizado"     
+[6] "PosUnoANueveBAAR"
+> Base2017$RDOCULTIVODX <- as.factor(Base2017$RDOCULTIVODX)
+> levels(Base2017$RDOCULTIVODX)
+[1] "-"                        "+"                        "++"                      
+[4] "+++"                      "POSITIVO 1 A 20 COLONIAS"
+##################################################
  
