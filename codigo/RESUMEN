@@ -241,4 +241,10 @@ $contrasts$RDOBKDX
 [1] "-"                        "+"                        "++"                      
 [4] "+++"                      "POSITIVO 1 A 20 COLONIAS"
 ##################################################
+
+Exactitud:Es el número de predicciones correctas realizadas por el modelo por el número total de registros. datos desbalanceados tener cuidado  
+
+
+
+
  

@@ -36,7 +36,7 @@ NN = neuralnet(f,
                   rep=3 
 )
 plot(NN)
-  
+names(testNN)
 predict_testNN = compute(NN, testNN[,c(1:6)])    
 ideam.predict  = (predict_testNN$net.result * (max(data$ideam) - min(data$ideam))) + min(data$ideam)
 ideam.real = (testNN$ideam * (max(data$ideam) - min(data$ideam))) + min(data$ideam)

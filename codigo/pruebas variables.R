@@ -205,3 +205,150 @@ Base2017 <- Base2017 %>%
   mutate(ETNIAT = case_when(ETNIA == "NEGRO,MULATO,AFROCOLOMBIANO" ~ "NEGRO/MULATO/AFROCOLOMBIANO",
                             TRUE ~ ETNIA   ))
 Base2017$ETNIA <- NULL
+
+################### NORMALIZAR VAOLRES CUALITATIVOS 
+## formula con nombres a normalizar
+nom = names(Base2017)
+formNormaC = as.formula(paste(" ~ -1 + ", paste(nom, collapse = " + ")))
+# se normaliza la base de datos con la matris 
+
+Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
+attributes(Base2017NormaC)
+#  se combienta a framae   y se usa para una prueba de la red , sale ok 
+base  <- as.data.frame(model.matrix( formNormaC, data = Base2017 ))
+
+
+#### prueba
+nom = names(base)
+formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
+nnUno1 <- neuralnet(formp,
+                    data = base,
+                    #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                    hidden = 2,
+                    #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                    err.fct = "ce",
+                    #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                    linear.output= FALSE)
+plot(nnUno1)
+##################################  AQUI VAMOS  sali la prueba bien  ,, se continuan  con los datos nuemricos  y dividir los datos dos grupos 
+
+################### NORMALIZAR DATOS NUMERICOS
+
+###ESCALAR LOS DATOS NUMERICOS
+BNN <- as.data.frame(scale(Base2017[5:8]))
+Base2017 <- Base2017 %>%  mutate(CONTACTOS = scale(Base2017[5]))
+
+max = apply(Base2017 , 2 , max)
+min = apply(Base2017, 2 , min)
+BaseScaled = as.data.frame(scale(Base2017$CONTACTOS, center = min, scale = max - min))
+#####
+#### prueba
+nom = names(base)
+formp = as.formula(paste("RDOCULTIVO ~", paste(nom[!nom %in% "RDOCULTIVO"], collapse = " + ")))
+nnUno1 <- neuralnet(form,
+                    data = Base2017NormaC,
+                    #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                    hidden = 2,
+                    #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                    err.fct = "ce",
+                    #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                    linear.output= FALSE)
+##########################CONTRUIR LA MATRIZ DE INDICE PARA PRUEBAS Y ENTRENAMIENTO 
+nrow(Base2017) ## 602
+random = round(0.1 * nrow(Base2017), digits = 0) ##60
+total_index = 1:nrow(Base2017)
+index_test = sample(total_index, size = random)
+index_train = setdiff(total_index,index_test)
+
+############################################################# SEPARAR LOS DOS GRUPOS DE  DATOS
+BtrainNN = Base2017[index_train,]
+BtestNN = Base2017[index_test, ]
+dim(BtrainNN)
+dim(BtestNN)
+######
+str(BtrainNN)
+names(BtrainNN)
+BtrainNN$EDAD <- as.character(BtrainNN$EDAD)
+BtrainNN$EDAD <- as.numeric(BtrainNN$EDAD)
+
+
+
+##################################################################
+
+base <- as.data.frame(model.matrix(formNormaC, data = Base2017 ))
+
+base3 <- model.matrix(formNormaC, data = Base2017, contrasts = list(GRUPOP = "contr.sum") )
+
+base9 <- model.matrix(formNormaC, data = Base2017,  contrasts.ar =  list(GRUPOP =contrasts(Base2017$GRUPOP, contrasts=F) ))
+attributes(base9)
+attributes(base3)
+attributes(base)
+lapply(Base2017$GRUPOP, contrasts, contrasts = FALSE)
+base4 <- model.matrix(formNormaC, data = Base2017, 
+                      contrasts.arg = lapply(Base2017, is.factor, contrasts , contrasts = F))
+
+contrasts(Base2017$GRUPOP)
+options(contrasts=c("contr.sum","contr.poly"))
+
+Nivelgp <- levels(Base2017$GRUPOP)
+contr.sum(Nivelgp)
+contr.treatment(Nivelgp)
+contr.poly(Nivelgp)
+contr.helmert(Nivelgp)
+
+
+#######
+Base2017NormaC <- model.matrix( formNormaC, data = Base2017 )
+head(Base2017NormaC)
+str(Base2017NormaC)
+summary(Base2017NormaC)
+names(Base2017NormaC)
+
+
+# dummify the data
+dmy <- dummyVars(" ~ .", data = BtrainNN)
+trsf <- data.frame(predict(dmy, newdata = customers))
+
+BtrainNN <- as.data.frame( scale(BtrainNN[5:8]),data())
+
+
+
+
+nnUno1 <- neuralnet(form,
+                    data = mbd,
+                    #Un vector de enteros que especifica el número de neuronas ocultas (vértices) en cada capa.
+                    hidden = 2,
+                    #función diferenciable que se utiliza para el cálculo del error.ce =la entropía cruzada
+                    err.fct = "ce",
+                    #si se debe aplicar función diferenciable que se utiliza para suavizar el resultado.
+                    linear.output= FALSE)
+??dummyVars
+??model.matrix
+
+
+
+
+
+
+
+
+############################################################################################
+################### EJEMPLO  ( CAPA  DE  NEURONAS )  
+
+################### MOSTRAR 
+plot(nnUno1)
+############################################################################################
+
+
+##################################  
+############################################################################################
+################### EJEMPLO  ( CAPA  DE  NEURONAS )  
+
+################### MOSTRAR 
+plot(nnUno1)
+############################################################################################
+
+
+
+
+
