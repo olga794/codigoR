@@ -349,6 +349,73 @@ plot(nnUno1)
 ############################################################################################
 
 
+datarealpred2 =cbind.data.frame(nuevop,nuevor)
+confusionMatrix(datarealpred2)
+CFM=  confusionMatrix(nuevor, nuevop)
+print(CFM,mode = "everything",
+      digits = max(3, getOption("digits") - 3),printStats = TRUE)
+CFM$overall
+CFM$positive
+CFM$byClass
+dataMETRI = data.frame(CFM$overall[1],CFM$byClass[2],CFM$byClass[4],CFM$byClass[3],CFM$byClass[7])
+
+install.packages('e1071', dependencies=TRUE)
+datarealpred =cbind.data.frame(RDOCULTIVO.predict,RDOCULTIVO.real)
+
+print("prediccion contra real:")   
+print(datarealpred)        
+
+positive <- sum(datarealpred$RDOCULTIVO.real == 1)
+negative <- sum(datarealpred$RDOCULTIVO.real == 0)
+predicted_positive <- sum(datarealpred$RDOCULTIVO.predict == 1)
+predicted_negative <- sum(datarealpred$RDOCULTIVO.predict == 0)
+total <- nrow(datarealpred)
+matrizConfusionTotal = data.frame(positive, negative,predicted_positive,predicted_negative)
+
+tp<-sum(datarealpred$RDOCULTIVO.real == 1 & datarealpred$RDOCULTIVO.predict == 1)
+tn<-sum(datarealpred$RDOCULTIVO.real == 0 & datarealpred$RDOCULTIVO.predict == 0)
+fp<-sum(datarealpred$RDOCULTIVO.real == 0 & datarealpred$RDOCULTIVO.predict == 1)
+fn<-sum(datarealpred$RDOCULTIVO.real == 1 & datarealpred$RDOCULTIVO.predict == 0)
+matrizConfusionInterna = data.frame(tp,tn,fp,fn)
+accuracy <- round((tp+tn)/total,digits = 3)
+precision <- tp/(tp+fp)
+sensitivity <- tp/(tp+fn)
+especificity <- tn/(tn+fp)
+F1 <- (2*precision*sensitivity)/(precision+sensitivity)
+
+
+medidaspk = data.frame(accuracy,precision,sensitivity,especificity,F1)
+
+??confusionMatrix
+error_rate <- (fp+fn)/total
+
+
+
+npv <- tn / predicted_negative
+medidas = data.frame(accuracy,error_rate,sensitivity,especificity,precision,npv)
+
+
+
+r_rmse = round(sqrt(mean((datarealpred$RDOCULTIVO.predict-datarealpred$RDOCULTIVO.real)^2, na.rm = FALSE)),digits = 3)
+r_r = round(cor(datarealpred$RDOCULTIVO.predict,datarealpred$RDOCULTIVO.real),digits = 3)
+r_r2 = round(r_r^2,digits = 3)
+
+
+
+print("puntuaciones and metricas:")
+print(paste(r_rmse,r_r,r_r2))
+
+print(paste("Accuracy : ", accuracy(RDOCULTIVO.real, RDOCULTIVO.predict))) 
+print(paste("AUC      : ", auc(RDOCULTIVO.real, RDOCULTIVO.predict))) ## area bajo la curva 
+print(paste("Precision: ", precision(RDOCULTIVO.real, RDOCULTIVO.predict)))
+print(paste("Recall   : ", recall(RDOCULTIVO.real,RDOCULTIVO.predict)))
+print(paste("F1       : ", f1(RDOCULTIVO.real, RDOCULTIVO.predict)))
+print(paste("Especificity : ", specificity(nuevor,nuevop)))
+print(paste("RMSE     : ", rmse(RDOCULTIVO.real,RDOCULTIVO.predict)))
+
+
+
+
 
 
 

@@ -180,25 +180,16 @@ RDOCULTIVO.predict  = predict_testNN$net.result*(max(base2017scaled$RDOCULTIVO)-
 RDOCULTIVO.real = B2017testNN$RDOCULTIVO*(max(base2017scaled$RDOCULTIVO)-min(base2017scaled$RDOCULTIVO))+min(base2017scaled$RDOCULTIVO)
 RDOCULTIVO.predict = ifelse(RDOCULTIVO.predict == 1, 1, 0)
 
-nuevop <- as.factor(RDOCULTIVO.predict)
-nuevor <- as.factor(RDOCULTIVO.real)
-
-datarealpred2 =cbind.data.frame(nuevop,nuevor)
-confusionMatrix(datarealpred2)
- CFM=  confusionMatrix(nuevor, nuevop)
- print(CFM,mode = "everything",
-       digits = max(3, getOption("digits") - 3),printStats = TRUE)
- CFM$overall
- CFM$positive
- CFM$byClass
- dataMETRI = data.frame(CFM$overall[1],CFM$byClass[2],CFM$byClass[4],CFM$byClass[3],CFM$byClass[7])
+RDOCULTIVO.predict <- as.factor(RDOCULTIVO.predict)
+RDOCULTIVO.real <- as.factor(RDOCULTIVO.real)
+CFM=  confusionMatrix(RDOCULTIVO.predict,RDOCULTIVO.real)
  Accuracy = c(round(CFM$overall[1],digits = 3))
  Precision = c(round(CFM$byClass[2] ,digits = 3))    
  Sensitivity= c(round(CFM$byClass[4] ,digits = 3))
  Especificity= c(round(CFM$byClass[3] ,digits = 3))
  F1= c(round((2*Precision*Sensitivity)/(Precision+Sensitivity) ,digits = 3))
     
- metris = data.frame(Accuracy,Precision,Sensitivity,Especificity,F1)
+ metrisresultados = data.frame(Accuracy,Precision,Sensitivity,Especificity,F1)
 str(metris)
 
  
