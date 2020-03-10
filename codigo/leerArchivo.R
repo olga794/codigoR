@@ -178,57 +178,32 @@ red = nnUno
 predict_testNN = compute(red, B2017testNN[,c(1:ultimo)]) 
 RDOCULTIVO.predict  = predict_testNN$net.result*(max(base2017scaled$RDOCULTIVO)-min(base2017scaled$RDOCULTIVO))+min(base2017scaled$RDOCULTIVO)
 RDOCULTIVO.real = B2017testNN$RDOCULTIVO*(max(base2017scaled$RDOCULTIVO)-min(base2017scaled$RDOCULTIVO))+min(base2017scaled$RDOCULTIVO)
+RDOCULTIVO.predict = ifelse(RDOCULTIVO.predict == 1, 1, 0)
 
-RDOCULTIVO.predict = ifelse(RDOCULTIVO.predict > 0.5, 1, 0)
-datarealpred =cbind.data.frame(RDOCULTIVO.predict,RDOCULTIVO.real)
+nuevop <- as.factor(RDOCULTIVO.predict)
+nuevor <- as.factor(RDOCULTIVO.real)
 
-print("prediccion contra real:")   
-print(datarealpred)        
+datarealpred2 =cbind.data.frame(nuevop,nuevor)
+confusionMatrix(datarealpred2)
+ CFM=  confusionMatrix(nuevor, nuevop)
+ print(CFM,mode = "everything",
+       digits = max(3, getOption("digits") - 3),printStats = TRUE)
+ CFM$overall
+ CFM$positive
+ CFM$byClass
+ dataMETRI = data.frame(CFM$overall[1],CFM$byClass[2],CFM$byClass[4],CFM$byClass[3],CFM$byClass[7])
+ Accuracy = c(round(CFM$overall[1],digits = 3))
+ Precision = c(round(CFM$byClass[2] ,digits = 3))    
+ Sensitivity= c(round(CFM$byClass[4] ,digits = 3))
+ Especificity= c(round(CFM$byClass[3] ,digits = 3))
+ F1= c(round((2*Precision*Sensitivity)/(Precision+Sensitivity) ,digits = 3))
+    
+ metris = data.frame(Accuracy,Precision,Sensitivity,Especificity,F1)
+str(metris)
 
-positive <- sum(datarealpred$RDOCULTIVO.real == 1)
-negative <- sum(datarealpred$RDOCULTIVO.real == 0)
-predicted_positive <- sum(datarealpred$RDOCULTIVO.predict == 1)
-predicted_negative <- sum(datarealpred$RDOCULTIVO.predict == 0)
-total <- nrow(datarealpred)
-matrizConfusionTotal = data.frame(positive, negative,predicted_positive,predicted_negative)
+ 
+ 
 
-tp<-sum(datarealpred$RDOCULTIVO.real == 1 & datarealpred$RDOCULTIVO.predict == 1)
-tn<-sum(datarealpred$RDOCULTIVO.real == 0 & datarealpred$RDOCULTIVO.predict == 0)
-fp<-sum(datarealpred$RDOCULTIVO.real == 0 & datarealpred$RDOCULTIVO.predict == 1)
-fn<-sum(datarealpred$RDOCULTIVO.real == 1 & datarealpred$RDOCULTIVO.predict == 0)
-matrizConfusionInterna = data.frame(tp,tn,fp,fn)
-accuracy <- (tp+tn)/total
-error_rate <- (fp+fn)/total
-sensitivity <- tp/positive
-especificity <- tn/negative
-precision <- tp/predicted_positive
-npv <- tn / predicted_negative
-medidas = data.frame(accuracy,error_rate,sensitivity,especificity,precision,npv)
-
-
-
-r_rmse = round(sqrt(mean((datarealpred$RDOCULTIVO.predict-datarealpred$RDOCULTIVO.real)^2, na.rm = FALSE)),digits = 3)
-r_r = round(cor(datarealpred$RDOCULTIVO.predict,datarealpred$RDOCULTIVO.real),digits = 3)
-r_r2 = round(r_r^2,digits = 3)
-
-
-
-print("puntuaciones and metricas:")
-print(paste(r_rmse,r_r,r_r2))
-
-print(paste("Accuracy : ", accuracy(RDOCULTIVO.real, RDOCULTIVO.predict))) 
-print(paste("AUC      : ", auc(RDOCULTIVO.real, RDOCULTIVO.predict))) ## area bajo la curva 
-print(paste("Precision: ", precision(RDOCULTIVO.real, RDOCULTIVO.predict)))
-print(paste("Recall   : ", recall(RDOCULTIVO.real,RDOCULTIVO.predict)))
-print(paste("F1       : ", f1(RDOCULTIVO.real, RDOCULTIVO.predict)))
-print(paste("RMSE     : ", rmse(RDOCULTIVO.real,RDOCULTIVO.predict)))
-
-pbar$step()
-??auc
-
-real <- c (1, 1, 1, 0, 0, 0)
-predicho <- c (0.9, 0.8, 0.4, 0.5, 0.3, 0.2)
-prueba= auc(real, predicho)
 ############################################################################################
 ################### EJEMPLO 2  (2 CAPA  DE 3, 2 NEURONAS )  
 nnDos = neuralnet(formNN,
@@ -258,3 +233,6 @@ plot(nnTres)
 plot(nnUno1)
 ############################################################################################
 
+
+
+###################
